@@ -1,0 +1,7 @@
+$ mkdr build 
+$ cd build 
+$ cmake ..
+$ cmake --build . --config Debug
+--------------------------------
+open build/game-emulator.exe
+--------------------------------

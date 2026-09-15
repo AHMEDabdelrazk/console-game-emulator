@@ -1,0 +1,53 @@
+# ==============================================
+# Game Emulator - .gitignore
+# ==============================================
+
+# CMake Build Output
+build/
+out/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Compiled Binaries
+*.exe
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.pdb
+*.ilk
+*.exp
+
+# Debug/Release Output Folders
+Debug/
+Release/
+RelWithDebInfo/
+MinSizeRel/
+
+# IDE & Editor Files
+.vscode/
+.vs/
+.idea/
+*.suo
+*.user
+*.sln.docinfo
+*.opensdf
+*.sdf
+*.aps
+
+# Windows Specific
+Thumbs.db
+desktop.ini
+
+# Logs & Temp
+*.log
+*.tmp
+*.bak
+
+# Generated Executables (locally built only)
+game_emulator.exe
