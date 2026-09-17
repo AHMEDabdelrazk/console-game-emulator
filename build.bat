@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 echo =======================================================
-echo           Building Game Emulator (C++17)
+echo     Building Game Emulator (Console Standalone C++17)
 echo =======================================================
 
 set CXX=C:\msys64\ucrt64\bin\g++.exe
@@ -26,7 +26,9 @@ echo Compiling source files...
     -I "games/HEADERs" ^
     -I "controller/HEADERs" ^
     inputs/SRCs/keybord_listener.cpp ^
+    inputs/SRCs/qml_input_listener.cpp ^
     viewer/SRCs/viewer.cpp ^
+    viewer/SRCs/qml_renderer.cpp ^
     games/SRCs/snake.cpp ^
     games/SRCs/cars.cpp ^
     games/SRCs/cubes.cpp ^
@@ -34,6 +36,7 @@ echo Compiling source files...
     games/SRCs/sudocku.cpp ^
     controller/SRCs/task_manger.cpp ^
     controller/SRCs/controller.cpp ^
+    controller/SRCs/qml_manager.cpp ^
     game_emulator.cpp ^
     -o game_emulator.exe
 

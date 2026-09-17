@@ -10,6 +10,7 @@
 #include "viewer.hpp"
 #include "game.hpp"
 #include "task_manger.hpp"
+#include "qml_manager.hpp"
 
 namespace emulator {
 
@@ -19,25 +20,37 @@ enum class AppState {
     EXIT
 };
 
+enum class LaunchMode {
+    AUTO,
+    CONSOLE,
+    QML
+};
+
 class controller {
 public:
-    controller(std::shared_ptr<IInputListener> input, std::shared_ptr<IRenderer> renderer);
-    controller(std::shared_ptr<keybord_listener> input, std::shared_ptr<viewer> renderer);
+    controller(std::shared_ptr<IInputListener> input = nullptr, std::shared_ptr<IRenderer> renderer = nullptr);
     ~controller();
 
-    // Main execution entry points
-    int run();
-    void StartGame(); // Backward compatible loop tick
+    // Launch entry points
+    int run(LaunchMode mode = LaunchMode::AUTO, int argc = 0, char* argv[] = nullptr);
+    int startConsole();
+    int startUI(int argc, char* argv[]);
 
+    // Backward compatible tick & helpers
+    void StartGame();
     void registerGame(std::shared_ptr<game> g);
     void selectGame(size_t index);
     void returnToMenu();
+
+    std::shared_ptr<qml_manager> getQmlManager() const { return qmlManager_; }
+    const std::vector<std::shared_ptr<game>>& getGames() const { return gameCatalog; }
 
 private:
     std::shared_ptr<IInputListener> input;
     std::shared_ptr<IRenderer> renderer;
     std::shared_ptr<game> activeGame;
     std::vector<std::shared_ptr<game>> gameCatalog;
+    std::shared_ptr<qml_manager> qmlManager_;
 
     AppState state = AppState::MENU;
     int selectedMenuIndex = 0;

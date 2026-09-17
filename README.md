@@ -1,220 +1,162 @@
-# 🎮 Game Emulator
+# 🎮 Game Emulator (Console + Handheld QML UI)
 
 > **A personal project by Ahmed Abdelrazik Ramadan**
 
-A modular, multi-game arcade emulator built in modern **C++17**, designed from the ground up with a clean, interface-driven architecture. This is the console test phase of a larger vision — a full-featured **hardware emulator** with a graphical **Qt UI frontend**.
+A modular, multi-game arcade and handheld emulator built in modern **C++17** and **Qt 6 QML**. The project features a dual-mode engine with a strict decoupled interface architecture:
+1. **Handheld Retro QML UI**: Modeled after a real physical handheld gaming console (curved matte chassis, authentic D-Pad, tactile A/B/X/Y buttons, rubber system controls, speaker grilles, and an LCD screen with CRT scanlines).
+2. **Terminal Double-Buffered Console Mode**: High-performance, 100% flicker-free terminal gaming with full color and ASCII art.
+
+This completes **Stage 2** of the long-term vision towards building a full hardware emulator.
 
 ---
 
-## 💡 The Idea Behind This Project
-
-This project started from a personal goal: I wanted to design and build a **game emulator engine** from scratch — not just as a coding exercise, but as the foundation of something bigger.
-
-The plan is in **three stages**:
+## 💡 The Vision & Roadmap
 
 ```
-[ Stage 1 ] Console Game Emulator       ← You are here
-            (C++17 · Interface-based architecture · 5 games)
-                          |
-                          v
-[ Stage 2 ] Qt UI Version
-            (Same engine, GUI frontend via Qt · no game logic changes)
-                          |
-                          v
-[ Stage 3 ] Hardware Emulator Integration
-            (Emulate real hardware: CPU, memory, I/O — plug in games as ROMs)
+[ Stage 1 ] Console Game Emulator (COMPLETED)
+            C++17 · Decoupled MVC Interfaces · 5 Complete Games
+                          │
+                          ▼
+[ Stage 2 ] Retro Handheld QML UI (COMPLETED)
+            Handheld Console Chassis · QmlManager · CRT LCD Screen · D-Pad/Buttons
+                          │
+                          ▼
+[ Stage 3 ] Hardware Emulator Integration (IN PROGRESS)
+            CPU Bus · Custom ROM Pipeline · Memory Mapping · Hardware Cartridges
 ```
-
-The architecture was specifically designed so that the rendering and input layers are **fully swappable** — switching from a terminal to a Qt widget or a hardware display requires zero changes to game logic.
 
 ---
 
-## 🎮 Games Included
+## 🕹️ Playable Games Included
+
+All 5 games are written in pure platform-independent C++17 and run identically in both the QML Handheld UI and the Console:
 
 | # | Game | Description | Controls |
-|---|------|-------------|----------|
-| 1 | 🐍 **Snake Classic** | Eat food, grow longer, avoid yourself and walls. Speed increases as you grow. | `Arrows` / `WASD` |
-| 2 | 🚗 **Highway Racer** | Dodge oncoming traffic across 4 lanes. Speed up, slow down, survive. | `A/D` — Lanes · `W/S` — Speed |
-| 3 | 🟦 **Cubes (Tetris)** | Stack falling tetromino blocks, clear full lines, chase the high score. Hard drop & rotation with wall kicks. | `Arrows` · `Space` — Drop |
-| 4 | 🏓 **Retro Pong** | 1-Player vs AI paddle. Ball accelerates, deflection angle depends on hit location. First to 7 wins. | `W/S` / `Up/Down` |
-| 5 | 🔢 **Sudoku Puzzle** | Navigate a 9×9 grid, fill in numbers, get validated in real-time against rows, columns, and subgrids. | `Arrows` · `1-4` · `Space` — Clear |
+|---|---|---|---|
+| 1 | 🐍 **Snake Classic** | Eat food, grow longer, avoid walls and your own tail. Dynamic speed curve. | `D-Pad` / `Arrows` / `WASD` |
+| 2 | 🏎️ **Highway Racer** | Dodge oncoming traffic across 4 highway lanes. Accelerate, brake, survive. | `Left/Right` (Lanes), `Up/Down` (Speed) |
+| 3 | 🧱 **Cubes (Tetris)** | Rotate and stack tetromino blocks to clear lines. Hard & soft drops with wall kicks. | `Arrows`, `Space` / `A` (Drop) |
+| 4 | 🏓 **Retro Pong** | 1-Player vs AI paddle. Ball accelerates and deflects based on hit angle. First to 7 wins. | `Up/Down` / `W/S` |
+| 5 | 🔢 **Sudoku 9x9** | Interactive 9x9 grid, cursor navigation, number placement with real-time rule checks. | `Arrows`, `1-4` (Numbers), `Space` |
 
 ---
 
-## 🏗️ Architecture
-
-The engine is built on a strict **interface-based MVC** pattern:
+## 🏗️ Architecture & Component Design
 
 ```
-┌────────────────────────────────────────────────────────┐
-│                   game_emulator.cpp                    │
-│              (Clean, 30-line main() entry)             │
-└─────────────────────┬──────────────────────────────────┘
-                      │
-                      ▼
-┌────────────────────────────────────────────────────────┐
-│                    Controller                          │
-│     Arcade Menu · State Machine · 30 FPS Game Loop     │
-│               Pause · Restart · Game Over              │
-└──────────┬───────────────────────────────┬─────────────┘
-           │                               │
-    uses   ▼                        uses   ▼
-┌──────────────────┐         ┌──────────────────────┐
-│  IInputListener  │         │      IRenderer       │
-│  (Input Layer)   │         │  (Rendering Layer)   │
-└────────┬─────────┘         └──────────┬───────────┘
-         │                              │
-         ▼ Console                      ▼ Console
-  keybord_listener              viewer (double-buffered,
-  (non-blocking,                flicker-free Win32 API)
-   thread-safe queue)
-         │                              │
-         ▼ Future Qt                    ▼ Future Qt
-  QtInputListener               QtRenderer (QPainter /
-  (QKeyEvent bridge)            QWidget / QGraphicsView)
-
-                      ▼
-┌────────────────────────────────────────────────────────┐
-│                    Game Layer (IGame)                  │
-│   snake · cars · cubes · pong · sudocku                │
-│   Pure C++17 — Zero OS/Console/Qt dependencies        │
-└────────────────────────────────────────────────────────┘
-                      ▼
-┌────────────────────────────────────────────────────────┐
-│                  Model / Core Types                    │
-│      Point2D · InputKey · Color · Direction            │
-│               GameState (shared primitives)            │
-└────────────────────────────────────────────────────────┘
+                     ┌───────────────────────────────┐
+                     │       game_emulator.cpp       │
+                     │  CLI Flags: --ui / --console  │
+                     └───────────────┬───────────────┘
+                                     │
+                                     ▼
+                     ┌───────────────────────────────┐
+                     │          controller           │
+                     │   startUI() / startConsole()  │
+                     └───────┬───────────────┬───────┘
+                             │               │
+               LaunchMode::QML               LaunchMode::CONSOLE
+                             │               │
+                             ▼               ▼
+                   ┌──────────────────┐    ┌──────────────────┐
+                   │    QmlManager    │    │    task_manger   │
+                   │ (QObject Bridge) │    │  (30 FPS Limiter)│
+                   └─────────┬────────┘    └─────────┬────────┘
+                             │                       │
+           ┌─────────────────┴───────────────────────┴─────────────────┐
+           ▼                                                           ▼
+┌──────────────────────┐                                    ┌──────────────────────┐
+│    IInputListener    │                                    │      IRenderer       │
+│  - qml_input_listener│                                    │  - qml_renderer      │
+│  - keybord_listener  │                                    │  - viewer (Console)  │
+└──────────┬───────────┘                                    └──────────┬───────────┘
+           │                                                           │
+           └─────────────────────────────┬─────────────────────────────┘
+                                         │
+                                         ▼
+                     ┌───────────────────────────────────────┐
+                     │             Game Engine               │
+                     │  snake · cars · cubes · pong · sudoku │
+                     │       Pure Platform-Independent       │
+                     └───────────────────────────────────────┘
 ```
 
-### Why this matters
-- **Games know nothing about the console** — they receive an `IRenderer&` and an `InputKey`. That's it.
-- **Migrating to Qt** = implement `IRenderer` with `QPainter` + implement `IInputListener` with `QKeyEvent`. No game files touched.
-- **Migrating to hardware** = implement `IRenderer` with a framebuffer / display driver. Same principle.
+### Key Reusable Components
+- **`QmlManager` (`controller/HEADERs/qml_manager.hpp`)**: Bridges C++ game state, scores, active ROM information, and the screen frame buffer to the QML frontend via reactive Qt properties and invokable slots.
+- **`IRenderer` & `IInputListener`**: Absolute decoupling — games never import Windows headers or Qt headers directly. They interact only through generic interfaces.
+- **`QmlRenderer` (`viewer/HEADERs/qml_renderer.hpp`)**: Thread-safe frame buffer capturing draw commands and streaming them to the QML LCD screen.
+- **`QmlInputListener` (`inputs/HEADERs/qml_input_listener.hpp`)**: Captures button presses from both physical keyboard and on-screen tactile D-Pad/Arcade buttons.
 
 ---
 
-## 📁 Project Structure
+## 📱 The QML Handheld Console Experience
 
-```
-game_emulator/
-├── game_emulator.cpp          ← Main entry point (clean, 30 lines)
-├── CMakeLists.txt             ← Root build configuration
-├── build.bat                  ← One-click Windows build script
-├── .gitignore
-│
-├── model/                     ← Shared core types (no dependencies)
-│   └── HEADERs/
-│       └── types.hpp          ← Point2D, InputKey, Color, Direction, GameState
-│
-├── inputs/                    ← Platform-specific input (swappable)
-│   ├── HEADERs/
-│   │   ├── input_interface.hpp   ← IInputListener abstract interface
-│   │   └── keybord_listener.hpp  ← Console implementation (thread-safe)
-│   └── SRCs/
-│       └── keybord_listener.cpp
-│
-├── viewer/                    ← Platform-specific rendering (swappable)
-│   ├── HEADERs/
-│   │   ├── renderer_interface.hpp ← IRenderer abstract interface
-│   │   └── viewer.hpp             ← Console double-buffered implementation
-│   └── SRCs/
-│       └── viewer.cpp
-│
-├── games/                     ← All game logic (100% platform-independent)
-│   ├── HEADERs/
-│   │   ├── game.hpp           ← IGame base class
-│   │   ├── snake.hpp
-│   │   ├── cars.hpp
-│   │   ├── cubes.hpp
-│   │   ├── pong.hpp
-│   │   └── sudocku.hpp
-│   └── SRCs/
-│       ├── snake.cpp
-│       ├── cars.cpp
-│       ├── cubes.cpp
-│       ├── pong.cpp
-│       └── sudocku.cpp
-│
-├── controller/                ← Orchestrator: menu, loop, state
-│   ├── HEADERs/
-│   │   ├── controller.hpp
-│   │   ├── task_manger.hpp    ← 30 FPS frame rate limiter
-│   │   └── utils.hpp
-│   └── SRCs/
-│       ├── controller.cpp
-│       └── task_manger.cpp
-│
-├── libs/                      ← Reserved: data structures, math, physics
-│   ├── datastructures/
-│   ├── math/
-│   ├── physics/
-│   └── searching/
-│
-└── _DOCs/                     ← Documentation & design
-    └── ProjectArchitecture.md
-```
+The QML UI (`qml/Main.qml`) includes:
+- **Ergonomic Handheld Body**: Dark matte casing with bevel edges, speaker grilles, metallic screws, and glowing power LED.
+- **CRT LCD Viewport (`ScreenView.qml`)**:
+  - Embedded LCD screen with authentic horizontal CRT scanline effect.
+  - Corner glass glare reflection gradient.
+  - Status header with battery indicator, 60 FPS counter, and mode badge.
+- **Interactive Cartridge Vault (`GameLibrary.qml`)**: Carousel displaying each game as a retro game cartridge with custom box art, genre tags, descriptions, and a 1-click launch button.
+- **Tactile D-Pad (`DPad.qml`)**: 4-way cross controller with directional feedback.
+- **Arcade Action Buttons (`ActionButtons.qml`)**: Diamond-layout A, B, X, Y buttons with 3D press animation.
+- **Rubber Pill System Buttons (`SystemButtons.qml`)**: SELECT, START, MENU, PAUSE, RESET.
 
 ---
 
 ## 🚀 How to Build & Run
 
-### Requirements
-- Windows OS
-- [MSYS2](https://www.msys2.org/) with `ucrt64` toolchain (GCC 16+)
-- C++17 compiler
+### Quick Start (Pre-configured MSYS2 UCRT64)
 
-### Option A — One-click script (recommended)
+#### 1. Launch QML Handheld Emulator UI (Default)
+```cmd
+.\game_emulator.exe
+```
+Or explicitly:
+```cmd
+.\game_emulator.exe --ui
+```
+
+#### 2. Launch Terminal Console Mode
+```cmd
+.\game_emulator.exe --console
+```
+
+#### 3. View Help
+```cmd
+.\game_emulator.exe --help
+```
+
+---
+
+### Rebuilding from Source
+
+#### Option A: One-Click Qt6 QML Build (`build_qt.bat`)
+```cmd
+build_qt.bat
+```
+Configures with CMake + Ninja, runs automatic MOC/RCC, and produces `game_emulator.exe`.
+
+#### Option B: Standalone Console Build (`build.bat`)
 ```cmd
 build.bat
 ```
-This compiles all source files directly with G++ and outputs `game_emulator.exe`.
-
-### Option B — CMake
-```cmd
-mkdir build
-cd build
-cmake .. -G "MinGW Makefiles"
-cmake --build . --config Debug
-```
-
-### Run
-```cmd
-game_emulator.exe
-```
+Compiles a standalone console binary using G++ without any Qt dependency.
 
 ---
 
-## 🕹️ In-Game Controls (Universal)
+## 🕹️ Universal Controls Reference
 
-| Key | Action |
-|-----|--------|
-| `P` | Pause / Resume |
-| `R` | Restart current game |
-| `ESC` | Return to Main Menu |
-| `Q` | Quit emulator |
-| `1` – `5` | Quick-select game from menu |
-| `Enter` / `Space` | Confirm selection in menu |
-
----
-
-## 🔮 Roadmap
-
-- [x] **Stage 1** — Console Game Emulator (current)
-  - [x] Interface-based decoupled architecture
-  - [x] 5 playable games
-  - [x] Flicker-free double-buffered console rendering
-  - [x] Arcade menu & state machine
-- [ ] **Stage 2** — Qt UI Version
-  - [ ] `QtRenderer` implementing `IRenderer` (QPainter / QWidget)
-  - [ ] `QtInputListener` implementing `IInputListener` (QKeyEvent)
-  - [ ] Game library panel with covers and descriptions
-  - [ ] Settings, themes, and window scaling
-- [ ] **Stage 3** — Hardware Emulator Integration
-  - [ ] Custom CPU / memory bus emulation layer
-  - [ ] ROM loading and execution pipeline
-  - [ ] Hardware-mapped I/O via `IInputListener` / `IRenderer`
-  - [ ] Game cartridge format definition
+| Control | Action in Vault (Menu) | Action in Game |
+|---|---|---|
+| **D-Pad / Arrows / WASD** | Browse Game Cartridges | Move character / vehicle / paddle |
+| **A Button / Space** | Insert Cartridge & Play | Primary Action / Hard Drop / Set Cell |
+| **B Button / Enter** | Select Game | Secondary Action / Confirm |
+| **START** | Launch Selected Game | Confirm |
+| **PAUSE (P)** | — | Toggle Pause Overlay |
+| **RESET (R)** | — | Restart Current Game |
+| **MENU (ESC)** | Exit to Desktop | Return to Cartridge Vault |
+| **1 – 5** | Quick-select game by number | Quick number placement |
 
 ---
 
@@ -223,10 +165,4 @@ game_emulator.exe
 **Ahmed Abdelrazik Ramadan**
 Personal Project — 2026
 
-> *"The console version is the proof of concept. The Qt version is the product. The hardware emulator is the destination."*
-
----
-
-## 📄 License
-
-This is a personal project. All rights reserved © 2026 Ahmed Abdelrazik Ramadan.
+> *"The console version was the proof of concept. The Qt handheld emulator is the product. The hardware emulator is the destination."*

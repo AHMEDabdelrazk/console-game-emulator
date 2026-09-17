@@ -1,0 +1,5 @@
+inputs_autogen/timestamp: \
+	C:/Users/Samir/Desktop/Temp\ A.Abdelrazik/projects/ConApps/game_emulator/inputs/CMakeLists.txt \
+	C:/Users/Samir/Desktop/Temp\ A.Abdelrazik/projects/ConApps/game_emulator/inputs/SRCs/keybord_listener.cpp \
+	C:/Users/Samir/Desktop/Temp\ A.Abdelrazik/projects/ConApps/game_emulator/inputs/SRCs/qml_input_listener.cpp \
+	C:/msys64/ucrt64/bin/cmake.exe

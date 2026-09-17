@@ -1,30 +1,40 @@
 /** 
- * Game Emulator - Multi-Game Arcade Console System
- * Decoupled MVC / Interface Architecture ready for future Qt UI integration.
+ * Game Emulator - Multi-Game Arcade Console & Handheld Emulator
+ * Decoupled Architecture supporting Console Mode and Qt QML UI Mode.
+ * Author: Ahmed Abdelrazik Ramadan
  * Copyright (c) 2026
  */
 
 #include <iostream>
+#include <string>
 #include <memory>
 #include "controller.hpp"
-#include "keybord_listener.hpp"
-#include "viewer.hpp"
 
 using namespace emulator;
 
-int main() {
+int main(int argc, char* argv[]) {
     try {
-        // 1. Initialize input provider (Console Keyboard Listener)
-        auto input = std::make_shared<keybord_listener>();
+        LaunchMode mode = LaunchMode::AUTO;
 
-        // 2. Initialize renderer (Console Double-Buffered Viewer, 100x28)
-        auto renderer = std::make_shared<viewer>(100, 28);
+        for (int i = 1; i < argc; ++i) {
+            std::string arg = argv[i];
+            if (arg == "--console" || arg == "-c") {
+                mode = LaunchMode::CONSOLE;
+            } else if (arg == "--ui" || arg == "-u") {
+                mode = LaunchMode::QML;
+            } else if (arg == "--help" || arg == "-h") {
+                std::cout << "Ahmed Abdelrazik's Game Emulator\n"
+                          << "Usage: game_emulator [options]\n\n"
+                          << "Options:\n"
+                          << "  --ui, -u         Launch Handheld Retro QML Graphical UI (Default)\n"
+                          << "  --console, -c    Launch Terminal Double-Buffered Console Mode\n"
+                          << "  --help, -h       Display this help message\n";
+                return 0;
+            }
+        }
 
-        // 3. Instantiate emulator controller with decoupled components
-        controller emulatorApp(input, renderer);
-
-        // 4. Run emulator main loop (handles menus, active games, and clean shutdown)
-        return emulatorApp.run();
+        controller emulatorApp;
+        return emulatorApp.run(mode, argc, argv);
 
     } catch (const std::exception& ex) {
         std::cerr << "Fatal Emulator Error: " << ex.what() << std::endl;

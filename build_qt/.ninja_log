@@ -1,0 +1,47 @@
+# ninja log v7
+90	1441	8113586229201202	inputs/inputs_autogen/timestamp	41f3271f856350
+90	1441	8113586229201202	inputs/inputs_autogen/mocs_compilation.cpp	41f3271f856350
+90	1441	8113586229201202	C:/Users/Samir/Desktop/Temp A.Abdelrazik/projects/ConApps/game_emulator/build_qt/inputs/inputs_autogen/timestamp	41f3271f856350
+90	1441	8113586229201202	C:/Users/Samir/Desktop/Temp A.Abdelrazik/projects/ConApps/game_emulator/build_qt/inputs/inputs_autogen/mocs_compilation.cpp	41f3271f856350
+138	1855	8113586233731470	viewer/viewer_autogen/timestamp	2ed783db27d975de
+138	1855	8113586233731470	viewer/viewer_autogen/mocs_compilation.cpp	2ed783db27d975de
+138	1855	8113586233731470	C:/Users/Samir/Desktop/Temp A.Abdelrazik/projects/ConApps/game_emulator/build_qt/viewer/viewer_autogen/timestamp	2ed783db27d975de
+138	1855	8113586233731470	C:/Users/Samir/Desktop/Temp A.Abdelrazik/projects/ConApps/game_emulator/build_qt/viewer/viewer_autogen/mocs_compilation.cpp	2ed783db27d975de
+1449	1989	8113586234327325	inputs/CMakeFiles/inputs.dir/inputs_autogen/mocs_compilation.cpp.obj	81b7b357d1df1cb0
+1859	2749	8113586238401304	viewer/CMakeFiles/viewer.dir/viewer_autogen/mocs_compilation.cpp.obj	f2537ec374a1652
+1480	4597	8113586234643435	inputs/CMakeFiles/inputs.dir/SRCs/qml_input_listener.cpp.obj	5df555f6b7607626
+1465	5908	8113586234491282	inputs/CMakeFiles/inputs.dir/SRCs/keybord_listener.cpp.obj	f10b7a3b5f8ed01c
+1875	6494	8113586238553611	viewer/CMakeFiles/viewer.dir/SRCs/qml_renderer.cpp.obj	84970cdf6e8cd265
+5909	6543	8113586278901770	inputs/libinputs.a	6f19513f5b09de8d
+1890	11109	8113586238700886	viewer/CMakeFiles/viewer.dir/SRCs/viewer.cpp.obj	5a7067d1768b9122
+11120	11513	8113586331026394	viewer/libviewer.a	aff54b58b36031eb
+11513	12104	8113586339405141	games/games_autogen/timestamp	73178c5e1ffbfc92
+11513	12104	8113586339405141	games/games_autogen/mocs_compilation.cpp	73178c5e1ffbfc92
+11513	12104	8113586339405141	C:/Users/Samir/Desktop/Temp A.Abdelrazik/projects/ConApps/game_emulator/build_qt/games/games_autogen/timestamp	73178c5e1ffbfc92
+11513	12104	8113586339405141	C:/Users/Samir/Desktop/Temp A.Abdelrazik/projects/ConApps/game_emulator/build_qt/games/games_autogen/mocs_compilation.cpp	73178c5e1ffbfc92
+12106	13181	8113586340904807	games/CMakeFiles/games.dir/games_autogen/mocs_compilation.cpp.obj	19960418e5ff2636
+12153	19870	8113586341372718	games/CMakeFiles/games.dir/SRCs/pong.cpp.obj	212b3e331f79bae7
+12185	20338	8113586341688429	games/CMakeFiles/games.dir/SRCs/sudocku.cpp.obj	241a49c71a829888
+12121	21025	8113586341056268	games/CMakeFiles/games.dir/SRCs/cars.cpp.obj	ff50c0627d534089
+12168	21028	8113586341522503	games/CMakeFiles/games.dir/SRCs/snake.cpp.obj	e808359ed143beac
+12137	22320	8113586341209998	games/CMakeFiles/games.dir/SRCs/cubes.cpp.obj	bbd84d8397d1c6c7
+22321	22838	8113586443056811	games/libgames.a	7181961c9f1fea4
+22838	27084	8113586488658466	controller/controller_autogen/timestamp	6c901316056611d1
+22838	27084	8113586488658466	controller/controller_autogen/mocs_compilation.cpp	6c901316056611d1
+22838	27084	8113586488658466	C:/Users/Samir/Desktop/Temp A.Abdelrazik/projects/ConApps/game_emulator/build_qt/controller/controller_autogen/timestamp	6c901316056611d1
+22838	27084	8113586488658466	C:/Users/Samir/Desktop/Temp A.Abdelrazik/projects/ConApps/game_emulator/build_qt/controller/controller_autogen/mocs_compilation.cpp	6c901316056611d1
+27140	29720	8113586491248439	controller/CMakeFiles/controller.dir/SRCs/task_manger.cpp.obj	decc051a5add79a0
+27090	40680	8113586490760142	controller/CMakeFiles/controller.dir/controller_autogen/mocs_compilation.cpp.obj	265dd76154bc9900
+27124	43716	8113586491061854	controller/CMakeFiles/controller.dir/SRCs/qml_manager.cpp.obj	e45b972389afa50d
+27107	50818	8113586490918618	controller/CMakeFiles/controller.dir/SRCs/controller.cpp.obj	36b380a4b231c37c
+50821	51315	8113586728073465	controller/libcontroller.a	37644cf60810f496
+51315	52026	8113586738214914	game_emulator_autogen/timestamp	84478d16dfbf3b7a
+51315	52026	8113586738214914	game_emulator_autogen/mocs_compilation.cpp	84478d16dfbf3b7a
+51315	52026	8113586738214914	C:/Users/Samir/Desktop/Temp A.Abdelrazik/projects/ConApps/game_emulator/build_qt/game_emulator_autogen/timestamp	84478d16dfbf3b7a
+51315	52026	8113586738214914	C:/Users/Samir/Desktop/Temp A.Abdelrazik/projects/ConApps/game_emulator/build_qt/game_emulator_autogen/mocs_compilation.cpp	84478d16dfbf3b7a
+52048	53254	8113586749165104	game_emulator_autogen/CCBC4FUR7J/qrc_qml.cpp	4a9184a7085fff79
+52048	53254	8113586749165104	C:/Users/Samir/Desktop/Temp A.Abdelrazik/projects/ConApps/game_emulator/build_qt/game_emulator_autogen/CCBC4FUR7J/qrc_qml.cpp	4a9184a7085fff79
+53254	53835	8113586752366552	CMakeFiles/game_emulator.dir/game_emulator_autogen/mocs_compilation.cpp.obj	8b13ee9c55d690b2
+53287	53939	8113586752693388	CMakeFiles/game_emulator.dir/game_emulator_autogen/CCBC4FUR7J/qrc_qml.cpp.obj	7157e46e469dc1c6
+53270	65801	8113586752487524	CMakeFiles/game_emulator.dir/game_emulator.cpp.obj	59a795ae347e3f6
+65801	66395	8113586877875878	game_emulator.exe	ee127d5c99749adc

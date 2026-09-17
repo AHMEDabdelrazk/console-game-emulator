@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>Main.qml</file>
+        <file>ScreenView.qml</file>
+        <file>GameLibrary.qml</file>
+        <file>GameDisplay.qml</file>
+        <file>DPad.qml</file>
+        <file>ActionButtons.qml</file>
+        <file>SystemButtons.qml</file>
+    </qresource>
+</RCC>

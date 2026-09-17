@@ -6,23 +6,26 @@
 #include "sudocku.hpp"
 #include <iostream>
 
+#if defined(QT_CORE_LIB) || defined(ENABLE_QT)
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <QDir>
+#endif
+
 namespace emulator {
 
-controller::controller(std::shared_ptr<IInputListener> input, std::shared_ptr<IRenderer> renderer)
-    : input(input), renderer(renderer), loopTimer(30)
-{
-    initializeGames();
-}
-
-controller::controller(std::shared_ptr<keybord_listener> input, std::shared_ptr<viewer> renderer)
-    : input(input), renderer(renderer), loopTimer(30)
+controller::controller(std::shared_ptr<IInputListener> in, std::shared_ptr<IRenderer> rend)
+    : input(in), renderer(rend), loopTimer(30)
 {
     initializeGames();
 }
 
 controller::~controller() {
-    renderer->clearBuffer();
-    renderer->present();
+    if (renderer) {
+        renderer->clearBuffer();
+        renderer->present();
+    }
 }
 
 void controller::initializeGames() {
@@ -44,14 +47,14 @@ void controller::selectGame(size_t index) {
         activeGame = gameCatalog[index];
         activeGame->reset();
         state = AppState::PLAYING;
-        input->clearKeys();
+        if (input) input->clearKeys();
     }
 }
 
 void controller::returnToMenu() {
     state = AppState::MENU;
     activeGame = nullptr;
-    input->clearKeys();
+    if (input) input->clearKeys();
 }
 
 void controller::handleMenuInput(InputKey key) {
@@ -111,15 +114,15 @@ void controller::handleInGameInput(InputKey key) {
 }
 
 void controller::renderMenu() {
+    if (!renderer) return;
+
     int menuWidth = 72;
     int menuHeight = 24;
     int startX = (renderer->getWidth() - menuWidth) / 2;
     int startY = 2;
 
-    // Outer decorative box
     renderer->drawBox(startX, startY, menuWidth, menuHeight, '#', Color::BRIGHT_CYAN);
 
-    // Header title banner
     std::string title = ">>> RETRO GAME EMULATOR <<<";
     int titleX = startX + (menuWidth - static_cast<int>(title.length())) / 2;
     renderer->drawString(titleX, startY + 2, title, Color::BRIGHT_YELLOW);
@@ -127,7 +130,6 @@ void controller::renderMenu() {
     std::string subtitle = "Select a game to play:";
     renderer->drawString(startX + 6, startY + 5, subtitle, Color::WHITE);
 
-    // List games
     for (size_t i = 0; i < gameCatalog.size(); ++i) {
         int itemY = startY + 7 + static_cast<int>(i) * 2;
         bool isSelected = (static_cast<int>(i) == selectedMenuIndex);
@@ -145,22 +147,21 @@ void controller::renderMenu() {
         }
     }
 
-    // Exit option
     int exitY = startY + 7 + static_cast<int>(gameCatalog.size()) * 2 + 1;
     bool isExitSelected = (selectedMenuIndex == static_cast<int>(gameCatalog.size()));
     std::string exitPrefix = isExitSelected ? " -> [" : "    [";
     std::string exitText = exitPrefix + "Q] Exit Emulator";
     renderer->drawString(startX + 6, exitY, exitText, isExitSelected ? Color::BRIGHT_RED : Color::DEFAULT);
 
-    // Footer controls
     renderer->drawString(startX + 6, startY + menuHeight - 3, "Controls: Up/Down: Navigate | Enter/Space: Play | Q: Quit", Color::BRIGHT_CYAN);
 }
 
 void controller::StartGame() {
+    if (!input || !renderer) return;
+
     loopTimer.tick();
     double dt = loopTimer.getDeltaTime();
 
-    // Process inputs
     while (input->hasKey()) {
         InputKey k = input->getKey();
         if (state == AppState::MENU) {
@@ -170,7 +171,6 @@ void controller::StartGame() {
         }
     }
 
-    // Update and Render
     renderer->clearBuffer();
 
     if (state == AppState::PLAYING && activeGame) {
@@ -184,11 +184,74 @@ void controller::StartGame() {
     loopTimer.limitFrameRate();
 }
 
-int controller::run() {
+int controller::startConsole() {
+    if (!input) {
+        input = std::make_shared<keybord_listener>();
+    }
+    if (!renderer) {
+        renderer = std::make_shared<viewer>(100, 28);
+    }
+
+    std::cout << "Starting Game Emulator in Console Mode..." << std::endl;
     while (isRunning && state != AppState::EXIT) {
         StartGame();
     }
     return 0;
+}
+
+int controller::startUI(int argc, char* argv[]) {
+#if defined(QT_CORE_LIB) || defined(ENABLE_QT)
+    QGuiApplication app(argc, argv);
+    app.setApplicationName("GameEmulator");
+    app.setOrganizationName("AbdelrazikGames");
+
+    qmlManager_ = std::make_shared<qml_manager>(gameCatalog);
+
+    QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("emulator", qmlManager_.get());
+
+    // Try loading bundled resource first, fall back to local directory
+    const QUrl url(QStringLiteral("qrc:/qml/Main.qml"));
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+                     &app, [url](QObject *obj, const QUrl &objUrl) {
+        if (!obj && url == objUrl)
+            QCoreApplication::exit(-1);
+    }, Qt::QueuedConnection);
+
+    engine.load(url);
+    if (engine.rootObjects().isEmpty()) {
+        // Fallback to local relative file if qrc is not yet embedded
+        engine.load(QUrl::fromLocalFile(QStringLiteral("qml/Main.qml")));
+    }
+
+    if (engine.rootObjects().isEmpty()) {
+        std::cerr << "Failed to load QML UI, falling back to Console Mode...\n";
+        return startConsole();
+    }
+
+    return app.exec();
+#else
+    (void)argc;
+    (void)argv;
+    std::cout << "Qt QML UI is not compiled in this build configuration. Launching Console Mode...\n";
+    return startConsole();
+#endif
+}
+
+int controller::run(LaunchMode mode, int argc, char* argv[]) {
+    switch (mode) {
+        case LaunchMode::CONSOLE:
+            return startConsole();
+        case LaunchMode::QML:
+            return startUI(argc, argv);
+        case LaunchMode::AUTO:
+        default:
+#if defined(QT_CORE_LIB) || defined(ENABLE_QT)
+            return startUI(argc, argv);
+#else
+            return startConsole();
+#endif
+    }
 }
 
 } // namespace emulator
